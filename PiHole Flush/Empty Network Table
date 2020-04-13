@@ -1,0 +1,34 @@
+To start with a fresh slate, first flush the actual ARP cache with below one:
+
+sudo ip -s -s neigh flush all
+
+Backup the database in case things go wrong:
+
+cd ~
+
+sqlite3 /etc/pihole/pihole-FTL.db ".backup main pihole-FTL.db.bak"
+
+See whats in it now:
+
+sqlite3 /etc/pihole/pihole-FTL.db "SELECT * FROM network"
+
+Delete them all:
+
+sudo -u pihole sqlite3 /etc/pihole/pihole-FTL.db "DELETE FROM network"
+
+And check again:
+
+sqlite3 /etc/pihole/pihole-FTL.db "SELECT * FROM network"
+
+To rollback and restore the backup:
+
+sudo service pihole-FTL stop
+
+sudo -u pihole sqlite3 /etc/pihole/pihole-FTL.db ".restore main pihole-FTL.db.bak"
+
+sudo service pihole-FTL start
+
+Ps. It might be that you experience a “database is locked” error because pihole-FTL probably locked some temporarily.
+Wait a bit and run the query again.
+
+EDIT: removed “VACUUM” from query.
